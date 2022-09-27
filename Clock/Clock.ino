@@ -1,14 +1,3 @@
-/**********************************************************************
-*
-* Clock using NTP server, esp8266 and a 16x2 LCD display 
-*
-**********************************************************************/
-
-/**********************************************************************
-*
-* Library Includes
-*
-**********************************************************************/
 #include <NTPClient.h>
 #include <ESP8266WiFi.h>
 #include <WiFiUdp.h>
@@ -17,9 +6,9 @@
 #include <Wire.h>
 #include <time.h>
 #include <ESP8266mDNS.h>
-#include <ArduinoOTA.h>
 #include <OneWire.h>
 #include <DallasTemperature.h>
+#include "OTA.h"
 /**********************************************************************
 *
 * Defines
@@ -53,6 +42,7 @@ WiFiUDP ntpUDP;
 NTPClient timeClient(ntpUDP, "pool.ntp.org", utcOffsetInSeconds, UpdateTime);
 OneWire oneWire(SENSOR_PIN);
 DallasTemperature sensortemp(&oneWire);
+OTA ota;
 /**********************************************************************
 *
 * Function prototypes
@@ -95,65 +85,7 @@ void setup()
     blinkLed();
   }
 
-//*************** OTA CALLBACKS *****************
-
-  ArduinoOTA.onStart([]() {
-    String type;
-    if (ArduinoOTA.getCommand() == U_FLASH) 
-    {
-      type = "sketch";
-    } 
-    else 
-    { // U_FS
-      type = "filesystem";
-    }
-
-    // NOTE: if updating FS this would be the place to unmount FS using FS.end()
- 
-    lcd.clear();
-    lcd.home();
-    lcd.print(F("  Starting OTA  "));
-    delay(200);
-  });
-
-  ArduinoOTA.onEnd([]() {
-
-    lcd.clear();
-    lcd.home();
-    lcd.print(F("    End OTA    "));
-    delay(100);
-  });
-
-  ArduinoOTA.onProgress([](unsigned int progress, unsigned int total) {
-    
-   static boolean onlyOnce = false;
-    if(onlyOnce == false)
-    {
-      onlyOnce = true;
-      lcd.clear();
-      lcd.home();
-      lcd.print(F(" OTA  progress:"));
-      delay(100);
-    }
-    
-    else
-    {
-       lcd.setCursor(6,1);
-       lcd.print(String((progress / (total / 100))) + (char)37); //(char)37 is the same as %
-    
-    }
-
-    
-  });
-
-  ArduinoOTA.onError([](ota_error_t error) {
-    lcd.clear();
-    lcd.home();
-    lcd.print(F("    ERROR OTA    "));
-    delay(100);
-  });
-
-  ArduinoOTA.begin();
+ota.Initialize();
 }
 /**********************************************************************
 *
@@ -162,10 +94,10 @@ void setup()
 **********************************************************************/
 void loop() 
 {
-  ArduinoOTA.handle();
-  
   conectaWiFi();
-  
+
+  ota.Handle();
+
   if(timeClient.update() == true)
   {
     blinkLed();
