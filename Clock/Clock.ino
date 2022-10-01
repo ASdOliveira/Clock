@@ -9,6 +9,7 @@
 #include <OneWire.h>
 #include <DallasTemperature.h>
 #include "OTA.h"
+#include "LED.h"
 /**********************************************************************
 *
 * Defines
@@ -18,8 +19,7 @@
 #define tempTime 2500    // number of microseconds showing the Temp
 #define UpdateTime 30000 // Time in microseconds to update date and time
 #define SENSOR_PIN D4
-#define LED_HIGH LOW     //state in which the LED turns off
-#define LED_LOW HIGH
+
 #define LED_PIN D0
 /**********************************************************************
 *
@@ -43,6 +43,7 @@ NTPClient timeClient(ntpUDP, "pool.ntp.org", utcOffsetInSeconds, UpdateTime);
 OneWire oneWire(SENSOR_PIN);
 DallasTemperature sensortemp(&oneWire);
 OTA ota;
+LED led(LED_PIN);
 /**********************************************************************
 *
 * Function prototypes
@@ -52,7 +53,6 @@ void bootMenu();
 float getTemp();
 void conectaWiFi();
 String getDateFromEpoch(unsigned int epoch);
-void blinkLed();
 void connectedWifiMenu(); 
 void customDelay();
 /**********************************************************************
@@ -62,8 +62,6 @@ void customDelay();
 **********************************************************************/
 void setup()
 {
-  pinMode(LED_PIN,OUTPUT);
-  
   lcd.begin(16,2); 
   big.begin(); 
   lcd.clear(); 
@@ -81,8 +79,8 @@ void setup()
   timeClient.begin(); // Connect to NTP server
   if(timeClient.forceUpdate() == true) // Force to update the date
   {
-    blinkLed();
-    blinkLed();
+    led.Blink();
+    led.Blink();
   }
 
 ota.Initialize();
@@ -100,7 +98,7 @@ void loop()
 
   if(timeClient.update() == true)
   {
-    blinkLed();
+    led.Blink();
     updateCounter = 0;
   }
   else
@@ -111,8 +109,8 @@ void loop()
       if(timeClient.forceUpdate() == true)
       {
         updateCounter = 0;
-        blinkLed();
-        blinkLed();
+        led.Blink();
+        led.Blink();
       }
     }
   }
@@ -216,7 +214,7 @@ void conectaWiFi()
 {
   if (WiFi.status() == WL_CONNECTED) 
   {
-     digitalWrite(LED_PIN,LED_LOW); //LED turns off with HIGH level
+    led.Status(LedStatus::OFF);
   }
   else
   {
@@ -239,7 +237,7 @@ void conectaWiFi()
           lcd.print(F("WiFi connecting"));
         }
         
-        blinkLed();
+        led.Blink();
         
         count++;
         if(count >= 100)
@@ -254,18 +252,7 @@ void conectaWiFi()
       timeClient.begin(); // Connect to NTP server
   }
 }
-/**********************************************************************
-*
-* blinkLed() 
-*
-**********************************************************************/
-void blinkLed()
-{
-        digitalWrite(LED_PIN,LED_HIGH);
-        delay(100);
-        digitalWrite(LED_PIN,LED_LOW);
-        delay(100);
-}
+
 /**********************************************************************
 *
 * getDateFromEpoch - converts the epoch time to the Date and return in a string 
