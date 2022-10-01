@@ -6,10 +6,11 @@
 #include <Wire.h>
 #include <time.h>
 #include <ESP8266mDNS.h>
-#include <OneWire.h>
-#include <DallasTemperature.h>
+
+//new classes:
 #include "OTA.h"
 #include "LED.h"
+#include "TempSensor.h"
 /**********************************************************************
 *
 * Defines
@@ -40,10 +41,10 @@ LiquidCrystal lcd(D6, D5, D3, D2, D1, D7);
 BigFont02     big(&lcd);; 
 WiFiUDP ntpUDP;
 NTPClient timeClient(ntpUDP, "pool.ntp.org", utcOffsetInSeconds, UpdateTime);
-OneWire oneWire(SENSOR_PIN);
-DallasTemperature sensortemp(&oneWire);
+
 OTA ota;
 LED led(LED_PIN);
+TempSensor temperatureSensor(SENSOR_PIN);
 /**********************************************************************
 *
 * Function prototypes
@@ -67,8 +68,6 @@ void setup()
   lcd.clear(); 
   
   bootMenu(); //Start up menu
-
-  sensortemp.begin(); 
   
   WiFi.mode(WIFI_STA);
   WiFi.setSleepMode(WIFI_NONE_SLEEP);
@@ -83,7 +82,7 @@ void setup()
     led.Blink();
   }
 
-ota.Initialize();
+  ota.Initialize();
 }
 /**********************************************************************
 *
@@ -145,7 +144,7 @@ void loop()
 
 //*********  2nd menu, displays: Temperature, weekday and the date
 
-  int temperature = (int)getTemp();
+  int temperature = (int)temperatureSensor.getTemperature();
   
   lcd.clear();
   lcd.home();
@@ -164,18 +163,6 @@ void loop()
   delay(tempTime); 
 }
 
-/**********************************************************************
-*
-* getTemp() - function that returns the read temperature  
-*
-**********************************************************************/
-float getTemp()
-{
-  sensortemp.requestTemperatures();
-  float TempLida = sensortemp.getTempCByIndex(0);
-
-  return TempLida;
-}
 /**********************************************************************
 *
 * bootMenu() - function that prints a text while is booting  
