@@ -18,19 +18,17 @@ void Display::BootMenu()
 {
   lcd.clear();
   lcd.setCursor(0,0);
-  lcd.print(F("     Hello !!   "));
+  lcd.print("     Hello !!   ");
   lcd.setCursor(0,1);
-  lcd.print(F("    Booting...  "));
-  delay(2000);
+  lcd.print("    Booting...  ");
 }
 
 void Display::ConnectedWifi(String localIP)
 {
   lcd.setCursor(1,0);
-  lcd.print(F("WiFi connected"));
+  lcd.print("WiFi connected");
   lcd.setCursor(1,1);
   lcd.print(localIP);
-  delay(2000);
 }
 
 void Display::ShowCurrentTime(int hour, int minutes)
@@ -83,14 +81,14 @@ void Display::ConnectingToWifi()
 {
   lcd.clear();
   lcd.home();
-  lcd.print(F("WiFi connecting"));
+  lcd.print("WiFi connecting");
 }
 
 void Display::Reseting()
 {
   lcd.clear();
   lcd.home();
-  lcd.print(F("  Reseting ...  "));
+  lcd.print("  Reseting ...  ");
 }
 
 void Display::LoadingAnimation(byte position)

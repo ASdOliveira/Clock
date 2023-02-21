@@ -38,12 +38,14 @@ void conectaWiFi();
 void setup()
 {
   display.BootMenu();
+  delay(2000);
   
   WiFi.mode(WIFI_STA);
   WiFi.setSleepMode(WIFI_NONE_SLEEP);
   conectaWiFi(); //Connect Wifi
   
   display.ConnectedWifi(WiFi.localIP().toString());
+  delay(2000);
 
   ota.Initialize();
 }
