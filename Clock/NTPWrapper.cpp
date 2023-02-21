@@ -51,7 +51,6 @@ int NTPWrapper::GetMinutes()
   return timeClient.getMinutes();
 }
 
-
 String NTPWrapper::GetDay()
 {
   return daysOfTheWeek[timeClient.getDay()];

@@ -1,23 +1,12 @@
 #include <ESP8266WiFi.h>
-#include <LiquidCrystal.h> 
-#include <BigFont02.h>
-//#include <Wire.h>
 #include <ESP8266mDNS.h>
 
 //new classes:
 #include "OTA.h"
 #include "LED.h"
-#include "TempSensor.h"
 #include "NTPWrapper.h"
-/**********************************************************************
-*
-* Defines
-*
-**********************************************************************/
-#define clockTime 3500   // number of microseconds showing the clock
-#define tempTime 2500    // number of microseconds showing the Temp
-#define SENSOR_PIN D4
-#define LED_PIN D0
+#include "Display.h"
+#include "Defines.h"
 /**********************************************************************
 *
 * Global variables
@@ -30,13 +19,9 @@ const char *password = "garantia";
 * Object instances
 *
 **********************************************************************/
-LiquidCrystal lcd(D6, D5, D3, D2, D1, D7);
-BigFont02     big(&lcd);; 
-
-
+Display display;
 OTA ota;
 LED led(LED_PIN);
-TempSensor temperatureSensor(SENSOR_PIN);
 NTPWrapper NTPTimer;
 
 /**********************************************************************
@@ -44,10 +29,7 @@ NTPWrapper NTPTimer;
 * Function prototypes
 *
 **********************************************************************/
-void bootMenu();
 void conectaWiFi();
-void connectedWifiMenu(); 
-void customDelay();
 /**********************************************************************
 *
 * Setup function
@@ -55,17 +37,13 @@ void customDelay();
 **********************************************************************/
 void setup()
 {
-  lcd.begin(16,2); 
-  big.begin(); 
-  lcd.clear(); 
-  
-  bootMenu(); //Start up menu
+  display.BootMenu();
   
   WiFi.mode(WIFI_STA);
   WiFi.setSleepMode(WIFI_NONE_SLEEP);
   conectaWiFi(); //Connect Wifi
   
-  connectedWifiMenu();
+  display.ConnectedWifi(WiFi.localIP().toString());
 
   ota.Initialize();
 }
@@ -82,84 +60,18 @@ void loop()
 
   NTPTimer.Update();
 
-  lcd.clear();
-  lcd.home();
-
   //*********  1st menu, displays: Hour : minuts
  
-  big.writeint(0,0, NTPTimer.GetHours(),2,false);
-  big.writeint(0,9, NTPTimer.GetMinutes(),2,true);
-
- //if condition to handle the two dots position
-
-  if(((int) NTPTimer.GetMinutes() >= 10) && ((int) NTPTimer.GetMinutes() < 20))
-  {
-    lcd.setCursor(8,0);
-    lcd.print((char)165);  //(char)165 is equal to a dot centered
-    lcd.setCursor(8,1);
-    lcd.print((char)165);
-  }
-
-  else
-  {   
-    lcd.setCursor(7,0);
-    lcd.print((char)165);
-    lcd.setCursor(7,1);
-    lcd.print((char)165);
-  }
+  display.ShowCurrentTime(NTPTimer.GetHours(), NTPTimer.GetMinutes());
 
   delay(clockTime);
 
 //*********  2nd menu, displays: Temperature, weekday and the date
-
-  int temperature = (int)temperatureSensor.getTemperature();
-  
-  lcd.clear();
-  lcd.home();
-  
-  big.writeint(0,0,temperature,2,false);
- 
-  lcd.setCursor(10,0);
-  lcd.print(NTPTimer.GetDate());
-  lcd.setCursor(6,1);
-  lcd.print((char)223);
-  lcd.setCursor(7,1);
-  lcd.print("C");
-  lcd.setCursor(11,1);
-  lcd.print(NTPTimer.GetDay());
+  display.ShowTemperatureAndDate(NTPTimer.GetDate(), NTPTimer.GetDay());
 
   delay(tempTime); 
 }
 
-/**********************************************************************
-*
-* bootMenu() - function that prints a text while is booting  
-*
-**********************************************************************/
-
-void bootMenu()
-{
-  lcd.setCursor(0,0);
-  lcd.print(F("     Hello !!   "));
-  lcd.setCursor(0,1);
-  lcd.print(F("    Booting...  "));
-  delay(2000);
-  lcd.clear();
-}
-/**********************************************************************
-*
-* show the connected IP address
-*
-**********************************************************************/
-void connectedWifiMenu()
-{
-  lcd.clear();
-  lcd.setCursor(1,0);
-  lcd.print(F("WiFi connected"));
-  lcd.setCursor(1,1);
-  lcd.print(WiFi.localIP());
-  delay(2000);
-}
 /**********************************************************************
 *
 * conectaWiFi() - function which handles the wifi connection 
@@ -178,18 +90,17 @@ void conectaWiFi()
   
       byte i = 0;
       byte count = 0;
-      lcd.home();
-      lcd.print(F("WiFi connecting"));
+      display.ConnectingToWifi();
+
       while (WiFi.status() != WL_CONNECTED) 
       {
-        lcd.setCursor(i,1);
-        lcd.print((char)255);
+        display.LoadingAnimation(i);      
         i++;
+        
         if(i>16)
         {
           i=0;
-          lcd.clear();
-          lcd.print(F("WiFi connecting"));
+          display.ConnectingToWifi();
         }
         
         led.Blink();
@@ -197,9 +108,7 @@ void conectaWiFi()
         count++;
         if(count >= 100)
         {
-          lcd.clear();
-          lcd.home();
-          lcd.print(F("  Reseting ...  "));
+          display.Reseting();
           delay(200);
           ESP.restart();
         }
