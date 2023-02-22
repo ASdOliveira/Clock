@@ -108,3 +108,40 @@ void Display::FetchingUpdatedTime()
   lcd.setCursor(0, 1);
   lcd.print(" Date and time ");
 }
+
+void Display::StartingOTA()
+{
+  lcd.clear();
+  lcd.home();
+  lcd.print("  Starting OTA  ");
+}
+
+void Display::EndingOTA()
+{
+  lcd.clear();
+  lcd.home();
+  lcd.print("    End OTA    ");
+}
+
+void Display::ErrorOTA()
+{
+  lcd.clear();
+  lcd.home();
+  lcd.print("    ERROR OTA    ");
+}
+
+void Display::ProgressOTA(String progress, bool &flag)
+{
+  if(flag == false)
+  {
+    flag = true;
+    lcd.clear();
+    lcd.home();
+    lcd.print(" OTA  progress:");
+  }
+  else
+  {
+    lcd.setCursor(6,1);
+    lcd.print(progress + (char)37); //(char)37 is the same as %
+  }
+}

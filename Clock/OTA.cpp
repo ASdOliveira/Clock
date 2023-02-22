@@ -1,6 +1,9 @@
 #include "Arduino.h"
 #include <ArduinoOTA.h>
 #include "OTA.h"
+#include "Display.h"
+
+Display *lcd_display = Display::getInstance();
 
 OTA::OTA()
 {
@@ -28,45 +31,26 @@ void OTA::Initialize()
 
     // NOTE: if updating FS this would be the place to unmount FS using FS.end()
 
-    // lcd.clear();
-    // lcd.home();
-    // lcd.print(F("  Starting OTA  "));
-    // delay(200);
+    lcd_display->StartingOTA();    
+    delay(200);
   });
 
   ArduinoOTA.onEnd([]() 
   {
-  //   lcd.clear();
-  //   lcd.home();
-  //   lcd.print(F("    End OTA    "));
-  //   delay(100);
+    lcd_display->EndingOTA();
+    delay(100);
   });
 
   ArduinoOTA.onProgress([](unsigned int progress, unsigned int total) 
   {  
-  //  static boolean onlyOnce = false;
-  //   if(onlyOnce == false)
-  //   {
-  //     onlyOnce = true;
-  //     lcd.clear();
-  //     lcd.home();
-  //     lcd.print(F(" OTA  progress:"));
-  //     delay(100);
-  //   }
-    
-  //   else
-  //   {
-  //      lcd.setCursor(6,1);
-  //      lcd.print(String((progress / (total / 100))) + (char)37); //(char)37 is the same as %
-  //   }
+    static boolean onlyOnce = false;
+    lcd_display->ProgressOTA(String((progress / (total / 100))), onlyOnce);
   });
 
   ArduinoOTA.onError([](ota_error_t error) 
   {
-    // lcd.clear();
-    // lcd.home();
-    // lcd.print(F("    ERROR OTA    "));
-    // delay(100);
+    lcd_display->ErrorOTA();    
+    delay(100);
   });
 
   ArduinoOTA.begin();

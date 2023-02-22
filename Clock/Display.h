@@ -17,6 +17,10 @@ class Display
   void ShowTemperatureAndDate(String date, String day);
   void ConnectingToWifi();
   void FetchingUpdatedTime();
+  void StartingOTA();
+  void EndingOTA();
+  void ErrorOTA();
+  void ProgressOTA(String progress, bool &flag);
 };
 
 #endif
