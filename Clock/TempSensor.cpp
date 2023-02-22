@@ -1,15 +1,29 @@
 #include "TempSensor.h"
+#include "Defines.h"
+#include <OneWire.h>
+#include <DallasTemperature.h>
 
-TempSensor::TempSensor(int sensorPin)
+static OneWire oneWire(SENSOR_PIN);
+static DallasTemperature sensortemp(&oneWire);
+
+// TempSensor::TempSensor(int sensorPin)
+// {
+//   this->sensorPin = sensorPin;
+//   oneWirePtr = new OneWire(sensorPin);
+//   sensortempPtr = new DallasTemperature(oneWirePtr);
+//   sensortempPtr->begin();
+// }
+
+void TempSensor::Init()
 {
-  this->sensorPin = sensorPin;
-  oneWirePtr = new OneWire(sensorPin);
-  sensortempPtr = new DallasTemperature(oneWirePtr);
-  sensortempPtr->begin();
+  sensortemp.begin();
 }
 
 float TempSensor::getTemperature()
 {
-  sensortempPtr->requestTemperatures();
-  return sensortempPtr->getTempCByIndex(0);
+  //Serial.println("GET TEmperature [+]");
+  //sensortemp.requestTemperatures();
+  //Serial.println("Get tempe {--}");
+  //return sensortemp.getTempCByIndex(0);
+  return 0.0;
 }

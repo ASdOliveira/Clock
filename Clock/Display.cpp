@@ -6,35 +6,29 @@
 
 LiquidCrystal lcd(D6, D5, D3, D2, D1, D7);
 BigFont02     big(&lcd);
-TempSensor temperatureSensor(SENSOR_PIN);
-static Display *instancePtr;
+TempSensor temperatureSensor;
   
 Display::Display()
 {
-  lcd.begin(16,2); 
-  big.begin();
+
 }
 
-Display *Display::getInstance()
+void Display::begin()
 {
-  if (instancePtr == NULL)
-    {
-      instancePtr = new Display();
-      return instancePtr;
-    }
-    else
-    {
-      return instancePtr;
-    }
+  lcd.begin(16,2); 
+  big.begin();
+  temperatureSensor.Init();
 }
 
 void Display::BootMenu()
 {
+  Serial.println("BootMenu[+]");
   lcd.clear();
   lcd.setCursor(0,0);
   lcd.print("     Hello !!   ");
   lcd.setCursor(0,1);
   lcd.print("    Booting...  ");
+  Serial.println("BootMenu[-]");
 }
 
 void Display::ConnectedWifi(String localIP)
@@ -76,6 +70,7 @@ void Display::ShowTemperatureAndDate(String date, String day)
 {
   int temperature = (int)temperatureSensor.getTemperature();
   
+  Serial.println("temperature");
   lcd.clear();
   lcd.home();
   

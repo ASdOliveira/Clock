@@ -4,13 +4,10 @@
 #include <Arduino.h>
 
 class Display
-{
-  private:
-  Display();
-  
+{ 
   public:
-  Display(const Display &obj) = delete;
-  static Display *getInstance();
+  Display();
+  void begin();
   void BootMenu();
   void ConnectedWifi(String localIP);
   void ShowCurrentTime(int hour, int minutes);

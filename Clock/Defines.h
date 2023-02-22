@@ -13,6 +13,6 @@
 #define TEMPERATURE_PERIOD 2.5    // number of seconds showing the Temp
 #define TOTAL_PERIOD (DATETIME_PERIOD + TEMPERATURE_PERIOD)
 
-#define UPDATE_SCREEN_TIME  0.3    //Value in seconds
+#define UPDATE_SCREEN_TIME  0.8    //Value in seconds
 
 #endif

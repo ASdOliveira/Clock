@@ -2,7 +2,6 @@
 #include "NTPWrapper.h"
 #include "LED.h"
 #include "Defines.h"
-#include "Display.h"
 
 const long utcOffsetInSeconds = -(3600*3);
 const char daysOfTheWeek[7][8] = {"Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sab"};
@@ -10,7 +9,6 @@ const char daysOfTheWeek[7][8] = {"Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sab
 WiFiUDP ntpUDP;
 NTPClient timeClient(ntpUDP, "pool.ntp.org", utcOffsetInSeconds, TIME_TO_SYNC_NTP);
 LED led(LED_PIN);
-Display *m_Display = Display::getInstance();
 
 NTPWrapper::NTPWrapper()
 {
@@ -45,7 +43,7 @@ void NTPWrapper::ForceUpdate()
   {
     timeClient.forceUpdate();
     led.Blink();
-    delay(500);
+    delay(1500);
   }
 }
 

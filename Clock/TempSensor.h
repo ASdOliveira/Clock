@@ -2,18 +2,18 @@
 #define __TEMPSENSOR_H__
 
 #include "Arduino.h"
-#include <OneWire.h>
-#include <DallasTemperature.h>
+
 
 class TempSensor
 {
   private:
-  int sensorPin;
-  OneWire *oneWirePtr;
-  DallasTemperature *sensortempPtr;
+  // int sensorPin;
+  // OneWire *oneWirePtr;
+  // DallasTemperature *sensortempPtr;
 
   public:
-  TempSensor(int sensorPin);
+  //TempSensor(int sensorPin);
+  void Init();
   float getTemperature();
 };
 
