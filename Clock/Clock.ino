@@ -1,3 +1,4 @@
+#include <Ticker.h>
 #include "OTA.h"
 #include "NTPWrapper.h"
 #include "Display.h"
@@ -8,6 +9,10 @@ Display *display = Display::getInstance();
 OTA ota;
 NTPWrapper NTPTimer;
 WIFI wifi;
+Ticker displayFlipper;
+
+float displayTime = 0;
+bool isShowingDatetime = true;
 
 void setup()
 {
@@ -17,6 +22,7 @@ void setup()
   wifi.Init();
   ota.Initialize();
   NTPTimer.ForceUpdate();
+  displayFlipper.attach(UPDATE_SCREEN_TIME ,changeDisplayInfo);
 }
 
 void loop() 
@@ -25,15 +31,22 @@ void loop()
   ota.Handle();
 
   NTPTimer.Update();
+}
 
-  //*********  1st menu, displays: Hour : minuts
- 
-  display->ShowCurrentTime(NTPTimer.GetHours(), NTPTimer.GetMinutes());
+void changeDisplayInfo()
+{
+  if(displayTime <= DATETIME_PERIOD)
+  {
+    display->ShowCurrentTime(NTPTimer.GetHours(), NTPTimer.GetMinutes());
+  }
+  else if(displayTime > DATETIME_PERIOD && displayTime <= TOTAL_PERIOD)
+  {
+    display->ShowTemperatureAndDate(NTPTimer.GetDate(), NTPTimer.GetDay());
+  }
+  else
+  {
+    displayTime = 0;
+  }
 
-  delay(clockTime);
-
-//*********  2nd menu, displays: Temperature, weekday and the date
-  display->ShowTemperatureAndDate(NTPTimer.GetDate(), NTPTimer.GetDay());
-
-  delay(tempTime); 
+  displayTime += UPDATE_SCREEN_TIME;
 }

@@ -102,7 +102,7 @@ void Display::ConnectingToWifi()
 
 void Display::FetchingUpdatedTime()
 {
-    lcd.clear();
+  lcd.clear();
   lcd.home();
   lcd.print("    Updating   ");
   lcd.setCursor(0, 1);
