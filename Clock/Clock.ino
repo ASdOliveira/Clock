@@ -5,7 +5,7 @@
 #include "Defines.h"
 #include "WIFI.h"
 
-Display display;
+Display *display = Display::getInstance();
 OTA ota;
 LED led(LED_PIN);
 NTPWrapper NTPTimer;
@@ -18,13 +18,10 @@ WIFI wifi;
 **********************************************************************/
 void setup()
 {
-  display.BootMenu();
+  display->BootMenu();
   delay(2000);
 
-  wifi.Init();  // Will wait until finish the config
-  
-  //display.ConnectedWifi(WiFi.localIP().toString());
-  //delay(2000);
+  wifi.Init();
 
   ota.Initialize();
 }
@@ -43,12 +40,12 @@ void loop()
 
   //*********  1st menu, displays: Hour : minuts
  
-  display.ShowCurrentTime(NTPTimer.GetHours(), NTPTimer.GetMinutes());
+  display->ShowCurrentTime(NTPTimer.GetHours(), NTPTimer.GetMinutes());
 
   delay(clockTime);
 
 //*********  2nd menu, displays: Temperature, weekday and the date
-  display.ShowTemperatureAndDate(NTPTimer.GetDate(), NTPTimer.GetDay());
+  display->ShowTemperatureAndDate(NTPTimer.GetDate(), NTPTimer.GetDay());
 
   delay(tempTime); 
 }

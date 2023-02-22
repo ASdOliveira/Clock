@@ -1,8 +1,10 @@
 #include "WIFI.h"
 #include <WiFiManager.h>
 #include "Defines.h"
+#include "Display.h"
 
 WiFiManager wifiManager;
+Display *m_display = Display::getInstance();
 
 void saveConfigsCallback();
 
@@ -13,7 +15,7 @@ void WIFI::Init()
 {
   WiFi.mode(WIFI_STA);
 
-  //Serial.println("[WIFI] Initializing WifiManager");
+  m_display->ConnectingToWifi();
  
   //wifiManager.setConfigPortalBlocking(false); // Set to true
   wifiManager.setConfigPortalTimeout(60); //Waiting to connect to an old known Wifi for 60s
@@ -41,6 +43,6 @@ void WIFI::CheckConnection()
 
 void saveConfigsCallback()
 {
-  //printLocalIP();  ADD DISPLAY METHODS HERE!!
+  m_display->ConnectedWifi(WiFi.localIP().toString());
   hasAlreadyConnected = true;
 }

@@ -7,11 +7,25 @@
 LiquidCrystal lcd(D6, D5, D3, D2, D1, D7);
 BigFont02     big(&lcd);
 TempSensor temperatureSensor(SENSOR_PIN);
-
+static Display *instancePtr;
+  
 Display::Display()
 {
   lcd.begin(16,2); 
   big.begin();
+}
+
+Display *Display::getInstance()
+{
+  if (instancePtr == NULL)
+    {
+      instancePtr = new Display();
+      return instancePtr;
+    }
+    else
+    {
+      return instancePtr;
+    }
 }
 
 void Display::BootMenu()
@@ -81,18 +95,7 @@ void Display::ConnectingToWifi()
 {
   lcd.clear();
   lcd.home();
-  lcd.print("WiFi connecting");
-}
-
-void Display::Reseting()
-{
-  lcd.clear();
-  lcd.home();
-  lcd.print("  Reseting ...  ");
-}
-
-void Display::LoadingAnimation(byte position)
-{
-  lcd.setCursor(position,1);
-  lcd.print((char)255);
+  lcd.print("  Waiting you  ");
+  lcd.setCursor(0, 1);
+  lcd.print("show me a WiFi");
 }
