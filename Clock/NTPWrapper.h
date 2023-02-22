@@ -13,6 +13,7 @@ class NTPWrapper
   public:
   NTPWrapper();
   void Update();
+  void ForceUpdate();
   int GetHours();
   int GetMinutes();
   String GetDay();

@@ -97,5 +97,14 @@ void Display::ConnectingToWifi()
   lcd.home();
   lcd.print("  Waiting you  ");
   lcd.setCursor(0, 1);
-  lcd.print("show me a WiFi");
+  lcd.print(" connect to me ");
+}
+
+void Display::FetchingUpdatedTime()
+{
+    lcd.clear();
+  lcd.home();
+  lcd.print("    Updating   ");
+  lcd.setCursor(0, 1);
+  lcd.print(" Date and time ");
 }

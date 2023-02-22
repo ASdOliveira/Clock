@@ -16,6 +16,7 @@ class Display
   void ShowCurrentTime(int hour, int minutes);
   void ShowTemperatureAndDate(String date, String day);
   void ConnectingToWifi();
+  void FetchingUpdatedTime();
 };
 
 #endif

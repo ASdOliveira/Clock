@@ -6,18 +6,16 @@
 WiFiManager wifiManager;
 Display *m_display = Display::getInstance();
 
-void saveConfigsCallback();
-
 unsigned long lastReconnectAttempt = 0;
 bool hasAlreadyConnected = false;
 
+void saveConfigsCallback();
+
 void WIFI::Init() 
 {
-  WiFi.mode(WIFI_STA);
-
   m_display->ConnectingToWifi();
- 
-  //wifiManager.setConfigPortalBlocking(false); // Set to true
+
+  WiFi.mode(WIFI_STA);
   wifiManager.setConfigPortalTimeout(60); //Waiting to connect to an old known Wifi for 60s
   wifiManager.setSaveConfigCallback(saveConfigsCallback);
   wifiManager.setDebugOutput(false);
@@ -27,15 +25,13 @@ void WIFI::Init()
 
 void WIFI::CheckConnection() 
 {
-  //wifiManager.process();
-
  if(WiFi.status() != WL_CONNECTED)
   {
     unsigned long now = millis();
-    if((now - lastReconnectAttempt > 3000) && hasAlreadyConnected)
+    if((now - lastReconnectAttempt > TIME_TO_WAIT_WIFI_CONNECTION) && hasAlreadyConnected)
     {
       lastReconnectAttempt = now;
-      //Serial.println("[WIFI] Reconnecting to wifi, please wait ");
+      m_display->ConnectingToWifi();
       wifiManager.autoConnect(WIFI_HOTSPOT_NAME);
     }
   }

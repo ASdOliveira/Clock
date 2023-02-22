@@ -1,29 +1,27 @@
 #include <time.h>
 #include "NTPWrapper.h"
-
-#define UpdateTime 30000 // Time in microseconds to update date and time
+#include "LED.h"
+#include "Defines.h"
+#include "Display.h"
 
 const long utcOffsetInSeconds = -(3600*3);
 const char daysOfTheWeek[7][8] = {"Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sab"};
 
 WiFiUDP ntpUDP;
-NTPClient timeClient(ntpUDP, "pool.ntp.org", utcOffsetInSeconds, UpdateTime);
+NTPClient timeClient(ntpUDP, "pool.ntp.org", utcOffsetInSeconds, TIME_TO_SYNC_NTP);
+LED led(LED_PIN);
+Display *m_Display = Display::getInstance();
 
 NTPWrapper::NTPWrapper()
 {
   timeClient.begin(); // Connect to NTP server
-  if(timeClient.forceUpdate() == true) // Force to update the date
-  {
-    //led.Blink();
-    //led.Blink();
-  }
 }
 
 void NTPWrapper::Update()
 {
-    if(timeClient.update() == true)
+  if(timeClient.update() == true)
   {
-    //led.Blink();
+    led.Blink();
     updateCounter = 0;
   }
   else
@@ -34,10 +32,20 @@ void NTPWrapper::Update()
       if(timeClient.forceUpdate() == true)
       {
         updateCounter = 0;
-        //led.Blink();
-        //led.Blink();
+        led.Blink();
+        led.Blink();
       }
     }
+  }
+}
+
+void NTPWrapper::ForceUpdate()
+{
+  while(!timeClient.update())
+  {
+    timeClient.forceUpdate();
+    led.Blink();
+    delay(500);
   }
 }
 
