@@ -1,35 +1,16 @@
-#include <ESP8266WiFi.h>
-#include <ESP8266mDNS.h>
-
-//new classes:
 #include "OTA.h"
 #include "LED.h"
 #include "NTPWrapper.h"
 #include "Display.h"
 #include "Defines.h"
-/**********************************************************************
-*
-* Global variables
-*
-**********************************************************************/
-const char *ssid     = "CASA";
-const char *password = "garantia";
-/**********************************************************************
-*
-* Object instances
-*
-**********************************************************************/
+#include "WIFI.h"
+
 Display display;
 OTA ota;
 LED led(LED_PIN);
 NTPWrapper NTPTimer;
+WIFI wifi;
 
-/**********************************************************************
-*
-* Function prototypes
-*
-**********************************************************************/
-void conectaWiFi();
 /**********************************************************************
 *
 * Setup function
@@ -39,13 +20,11 @@ void setup()
 {
   display.BootMenu();
   delay(2000);
+
+  wifi.Init();  // Will wait until finish the config
   
-  WiFi.mode(WIFI_STA);
-  WiFi.setSleepMode(WIFI_NONE_SLEEP);
-  conectaWiFi(); //Connect Wifi
-  
-  display.ConnectedWifi(WiFi.localIP().toString());
-  delay(2000);
+  //display.ConnectedWifi(WiFi.localIP().toString());
+  //delay(2000);
 
   ota.Initialize();
 }
@@ -56,7 +35,7 @@ void setup()
 **********************************************************************/
 void loop() 
 {
-  conectaWiFi();
+  wifi.CheckConnection();
 
   ota.Handle();
 
@@ -79,7 +58,7 @@ void loop()
 * conectaWiFi() - function which handles the wifi connection 
 *
 **********************************************************************/
-void conectaWiFi() 
+/*void conectaWiFi() 
 {
   if (WiFi.status() == WL_CONNECTED) 
   {
@@ -118,4 +97,4 @@ void conectaWiFi()
       
       NTPTimer.Update(); //Check if this update is indeed needed
   }
-}
+}*/
