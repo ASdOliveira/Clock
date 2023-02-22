@@ -8,9 +8,9 @@ This simple project is a clock. As main controller was used the esp8266, in whic
 
 ### Task list:
 
-- [ ] Organize the code into files
-- [ ] Add wifiManager 
-- [ ] Separate date and temperature on different screens
-- [ ] Add Icons to date and temperature screens
+- [X] Organize the code into files
+- [X] Add wifiManager 
+- [ ] ~Separate date and temperature on different screens~
+- [ ] ~Add Icons to date and temperature screens~
 - [ ] Add animation in hour screen
 - [ ] Improve readme file
