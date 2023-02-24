@@ -1,12 +1,12 @@
 #include "Display.h"
 #include <LiquidCrystal.h> 
 #include <BigFont02.h>
-#include "TempSensor.h"
+//#include "TempSensor.h"
 #include "Defines.h"
 
 LiquidCrystal lcd(D6, D5, D3, D2, D1, D7);
 BigFont02     big(&lcd);
-TempSensor temperatureSensor;
+//TempSensor temperatureSensor;
   
 Display::Display()
 {
@@ -17,18 +17,16 @@ void Display::begin()
 {
   lcd.begin(16,2); 
   big.begin();
-  temperatureSensor.Init();
+  //temperatureSensor.Init();
 }
 
 void Display::BootMenu()
 {
-  Serial.println("BootMenu[+]");
   lcd.clear();
   lcd.setCursor(0,0);
   lcd.print("     Hello !!   ");
   lcd.setCursor(0,1);
   lcd.print("    Booting...  ");
-  Serial.println("BootMenu[-]");
 }
 
 void Display::ConnectedWifi(String localIP)
@@ -66,11 +64,8 @@ void Display::ShowCurrentTime(int hour, int minutes)
   }
 }
 
-void Display::ShowTemperatureAndDate(String date, String day)
-{
-  int temperature = (int)temperatureSensor.getTemperature();
-  
-  Serial.println("temperature");
+void Display::ShowTemperatureAndDate(String date, String day, int temperature)
+{  
   lcd.clear();
   lcd.home();
   
@@ -116,6 +111,8 @@ void Display::EndingOTA()
   lcd.clear();
   lcd.home();
   lcd.print("    End OTA    ");
+  lcd.setCursor(0,1);
+  lcd.print("   Rebooting   ");
 }
 
 void Display::ErrorOTA()

@@ -25,6 +25,9 @@ void WIFI::Init()
   wifiManager.setDebugOutput(false);
   
   wifiManager.autoConnect(WIFI_HOTSPOT_NAME);
+  
+  WiFi.setAutoReconnect(true);
+  WiFi.persistent(true);
 }
 
 void WIFI::CheckConnection() 

@@ -1,3 +1,4 @@
+#include "IPAddress.h"
 #include <time.h>
 #include "NTPWrapper.h"
 #include "LED.h"
@@ -38,12 +39,10 @@ void NTPWrapper::Update()
 }
 
 void NTPWrapper::ForceUpdate()
-{
-  while(!timeClient.update())
+{  
+  while(timeClient.forceUpdate() != true)
   {
-    timeClient.forceUpdate();
-    led.Blink();
-    delay(1500);
+    delay(2000);
   }
 }
 

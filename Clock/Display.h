@@ -11,7 +11,7 @@ class Display
   void BootMenu();
   void ConnectedWifi(String localIP);
   void ShowCurrentTime(int hour, int minutes);
-  void ShowTemperatureAndDate(String date, String day);
+  void ShowTemperatureAndDate(String date, String day, int temperature);
   void ConnectingToWifi();
   void FetchingUpdatedTime();
   void StartingOTA();

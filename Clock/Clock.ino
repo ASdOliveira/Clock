@@ -1,63 +1,76 @@
-#include <Ticker.h>
 #include "OTA.h"
 #include "NTPWrapper.h"
 #include "Display.h"
 #include "Defines.h"
 #include "WIFI.h"
+#include <OneWire.h>
+#include <DallasTemperature.h>
 
 Display display;
 OTA ota(display);
 WIFI wifi(display);
 NTPWrapper NTPTimer;
-Ticker displayFlipper;
+OneWire oneWire(SENSOR_PIN);
+DallasTemperature sensortemp(&oneWire);
 
-float displayTime = 0;
-bool updateHour = true;
-bool updateTemperature = false;
+unsigned long now = 0;
+unsigned long lastDelay = 0;
+unsigned long diffTime = 0;
+int temperature = 0;
+bool isShowingHour = true;
+bool isShowingTemperature = false;
 
 void setup()
 {
-  Serial.begin(115200);
-  Serial.println("Setup [+]");
   display.begin();
   display.BootMenu();
   delay(2000);
-  Serial.println("WIFI");
+  
+  sensortemp.begin();
   wifi.Init();
-  Serial.println("OTA");
   ota.Initialize();
-  Serial.println("NTP");
+  
   display.FetchingUpdatedTime();
+  delay(2000);
   NTPTimer.ForceUpdate();
-  displayFlipper.attach(UPDATE_SCREEN_TIME ,changeDisplayInfo);
-
-  Serial.println("Setup [-]");
+  
+  lastDelay = millis();
 }
 
 void loop() 
 {
+  now = millis();
+  diffTime = now - lastDelay;
+
+  if(diffTime <= DATETIME_PERIOD && isShowingHour == true)
+  {
+    NTPTimer.Update();
+    display.ShowCurrentTime(NTPTimer.GetHours(), NTPTimer.GetMinutes());
+    isShowingHour = false;
+  }
+  else if(diffTime > DATETIME_PERIOD && diffTime <= TOTAL_PERIOD && isShowingHour == false)
+  {
+    temperature = (int)getTemp();
+    display.ShowTemperatureAndDate(NTPTimer.GetDate(), NTPTimer.GetDay(), temperature);
+    
+    isShowingHour = true;
+    isShowingTemperature = true;
+  }
+  else if (diffTime > TOTAL_PERIOD && isShowingTemperature)
+  {
+    lastDelay = now;
+  }
+
   wifi.CheckConnection();
-  
   ota.Handle();
 
-  NTPTimer.Update();
+  yield();
 }
 
-void changeDisplayInfo()
+float getTemp()
 {
-  if(displayTime <= DATETIME_PERIOD)
-  {
-    //display.ShowTemperatureAndDate(NTPTimer.GetDate(), NTPTimer.GetDay());
-    display.ShowCurrentTime(NTPTimer.GetHours(), NTPTimer.GetMinutes());
-  }
-  else if(displayTime > DATETIME_PERIOD && displayTime <= TOTAL_PERIOD)
-  {
-    display.ShowTemperatureAndDate(NTPTimer.GetDate(), NTPTimer.GetDay());
-  }
-  else
-  {
-    displayTime = 0;
-  }
+  sensortemp.requestTemperatures();
+  float TempLida = sensortemp.getTempCByIndex(0);
 
-  displayTime += UPDATE_SCREEN_TIME;
+  return TempLida;
 }
